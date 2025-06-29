@@ -4,6 +4,7 @@ from database import init_db, SessionLocal, Task
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from datetime import date
+from typing import List
 
 class TaskResponse(BaseModel):
     id: int
@@ -22,12 +23,6 @@ class TaskStatus(str, Enum):
     LATE = "late"
     CANCELLED = "cancelled"
 
-
-# class Task(BaseModel):
-#     title: str
-#     description: str | None = None
-#     status: TaskStatus
-#     due_date: date
 
 app = FastAPI()
 
@@ -51,7 +46,7 @@ def create_tasks(
     status: TaskStatus = Body(),
     due_date: date = Body(),
     db: Session = Depends(get_db),
-    response_model=Task,
+    response_model=TaskResponse,
     status_code=status.HTTP_201_CREATED,
 ):
     new_task = Task(
@@ -63,25 +58,13 @@ def create_tasks(
     return new_task
 
 
-@app.get("/tasks/{taskstatus}", response_model=TaskResponse)
-async def get_tasks_by_status(taskstatus: TaskStatus):
-    if taskstatus == TaskStatus.PENDING:
-        # code to get all pending tasks
+@app.get("/tasks", response_model=List[TaskResponse])
+def get_tasks_by_status(taskstatus: TaskStatus | None, db: Session = Depends(get_db)):
+    if taskstatus:
+        tasks = db.query(Task).filter(Task.status == taskstatus.value).all()
+        return tasks
+    return db.query(Task).all()
 
-        return
-
-    elif taskstatus == TaskStatus.IN_PROGRESS:
-        # code to get all inprogress tasks
-        return
-
-    elif taskstatus == TaskStatus.COMPLETED:
-        # code to get all completed tasks
-        return
-
-    elif taskstatus == TaskStatus.LATE:
-        # code to get all late tasks
-        return
-
-    elif taskstatus == TaskStatus.CANCELLED:
-        # code to get all cancelled tasks
-        return
+@app.get("/tasks/{task_id}", response_model= TaskResponse)
+def get_tasks_by_id(task_id: int, db: Session = Depends(get_db)):
+    return db.query(Task).filter(Task.id == task_id)
