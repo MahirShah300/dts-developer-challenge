@@ -1,9 +1,13 @@
-from sqlalchemy import Column, Integer, String, create_engine, Date
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column
+from models import TaskStatus
+from datetime import date
 
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    pass
+
+
 engine = create_engine(
     "sqlite:///./tasks.db", connect_args={"check_same_thread": False}
 )
@@ -13,11 +17,11 @@ SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 class Task(Base):
     __tablename__ = "tasks"
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    description = Column(String)
-    status = Column(String, index=True)
-    due_date = Column(Date, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column()
+    description: Mapped[str | None] = mapped_column(nullable=True)
+    task_status: Mapped[TaskStatus] = mapped_column()
+    due_date: Mapped[date] = mapped_column()
 
 
 def init_db():
