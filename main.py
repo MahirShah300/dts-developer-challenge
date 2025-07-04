@@ -8,11 +8,13 @@ from pydantic import BaseModel
 from datetime import date
 from typing import List
 from models import TaskStatus
+from fastapi.staticfiles import StaticFiles
 
 # TODO look at best practice of async def vs def
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="templates"), name="static")
 
 
 init_db()
@@ -131,8 +133,10 @@ def delete_task(request: Request, task_id: int, db: Session = Depends(get_db)):
         request, "task_deleted_confirmation.html", {"task": task}
     )
 
+@app.exception_handler(404)
+def handle_404_error(request: Request, __):
+    return templates.TemplateResponse(request, "404_redirect_page.html", status_code=404)
 
-# TODO change/add acceptable date format or date entering method
 # TODO Change button styling on create new task page
 # TODO OPTIONAL add ways to search by title, partial title
 # TODO OPTIONAL add way to sort by date
@@ -140,7 +144,5 @@ def delete_task(request: Request, task_id: int, db: Session = Depends(get_db)):
 # TODO Clean up unused code
 # TODO Look into pydantic model of Tasks. I think currently tasks are not using pydantic
 # TODO Make all pages html pages have a consistent style
-# TODO Create error redirect templates
 # TODO Fix search by status
-# TODO Create Unit Tests
 # TODO Input validation
