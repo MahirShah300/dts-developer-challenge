@@ -6,8 +6,8 @@ name = "pypi"
 [packages]
 black = "*"
 sqlalchemy = "*"
-pytest = "*"
 fastapi = {extras = ["standard"], version = "*"}
+pytest = "*"
 
 [dev-packages]
 
