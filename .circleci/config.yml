@@ -6,7 +6,6 @@ jobs:
       - image: cimg/python:3.12
     steps:
       - checkout
-      - run: ls -al  # debug
       - run:
           name: Install dependencies
           command: |
