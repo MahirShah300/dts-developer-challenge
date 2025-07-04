@@ -141,4 +141,6 @@ def delete_task(request: Request, task_id: int, db: Session = Depends(get_db)):
 # TODO Look into pydantic model of Tasks. I think currently tasks are not using pydantic
 # TODO Make all pages html pages have a consistent style
 # TODO Create error redirect templates
+# TODO Fix search by status
 # TODO Create Unit Tests
+# TODO Input validation
