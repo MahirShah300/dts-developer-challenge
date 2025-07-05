@@ -1,4 +1,3 @@
-# tests/conftest.py
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -48,20 +47,20 @@ def client():
 def insert_test_tasks(test_db_session):
     test_tasks = [
         Task(
-            title="Test Task PreInserted",
-            description="Test Description for PreInserted Task",
+            title="Alpha Task",
+            description="Test Description for Alpha Task",
             task_status="Pending",
             due_date=datetime.strptime("2025-12-31", "%Y-%m-%d").date(),
         ),
         Task(
-            title="Test Task PreInserted2",
-            description="Test Description for PreInserted Task2",
+            title="Beta Task",
+            description="Test Description for Beta Task",
             task_status="Pending",
             due_date=datetime.strptime("2026-12-31", "%Y-%m-%d").date(),
         ),
         Task(
-            title="Test Task PreInserted3 - different status",
-            description="Test Description for PreInserted Task3 - different status",
+            title="Gamma Cancelled Task",
+            description="Test Description Gamma Task",
             task_status="Cancelled",
             due_date=datetime.strptime("2027-12-31", "%Y-%m-%d").date(),
         ),
