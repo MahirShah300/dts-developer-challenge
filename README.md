@@ -18,3 +18,4 @@ They will also be able to edit and delete tasks.
 
 ## Further Development
 Create a more fluid and appealing front end using more powerful technologies such as flask or react.
+With these as a front end, can then start taking more advantage of APIs, and use JSON endpoints to take advantage of pydantic to validate and represent task objects, and for the auto generated documentaions.
