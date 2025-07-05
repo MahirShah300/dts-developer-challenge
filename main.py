@@ -71,16 +71,19 @@ def get_tasks(
         task = db.query(Task).filter(Task.id == task_id).first()
         if task is None:
             return templates.TemplateResponse(request, "task_not_found.html")
-        tasks = [task] if task else []
+        tasks = [task]
     elif task_status:
+        try:
+            # Convert to enum safely
+            status_enum = TaskStatus(task_status)
+            tasks = db.query(Task).filter(Task.task_status == status_enum.value).all()
+        except ValueError:
+            # Invalid status given
+            tasks = []
         tasks = db.query(Task).filter(Task.task_status == task_status.value).all()
     else:
         tasks = db.query(Task).all()
     return templates.TemplateResponse(request, "index.html", {"tasks": tasks})
-
-
-# TODO Add page for no tasks with that status or similar
-
 
 @app.get("/tasks/{task_id}/edit", response_class=HTMLResponse)
 def update_task_form(request: Request, task_id: int, db: Session = Depends(get_db)):
@@ -137,7 +140,6 @@ def delete_task(request: Request, task_id: int, db: Session = Depends(get_db)):
 def handle_404_error(request: Request, __):
     return templates.TemplateResponse(request, "404_redirect_page.html", status_code=404)
 
-# TODO Change button styling on create new task page
 # TODO OPTIONAL add ways to search by title, partial title
 # TODO OPTIONAL add way to sort by date
 # TODO Make it so search by ID search bar only accepts numbers
