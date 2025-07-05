@@ -3,10 +3,10 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from database import init_db, SessionLocal, Task
 from sqlalchemy.orm import Session
-from sqlalchemy import update
+from sqlalchemy import update, and_
 from pydantic import BaseModel
 from datetime import date
-from typing import List
+from typing import Annotated
 from models import TaskStatus
 from fastapi.staticfiles import StaticFiles
 
@@ -62,7 +62,8 @@ def create_tasks(
 @app.get("/tasks", response_class=HTMLResponse)
 def get_tasks(
     request: Request,
-    task_status: TaskStatus | None = None,
+    title: str | None = None,
+    task_status: str | None = None,
     task_id: int | None = None,
     db: Session = Depends(get_db),
 ):
@@ -72,18 +73,23 @@ def get_tasks(
         if task is None:
             return templates.TemplateResponse(request, "task_not_found.html")
         tasks = [task]
-    elif task_status:
-        try:
-            # Convert to enum safely
-            status_enum = TaskStatus(task_status)
-            tasks = db.query(Task).filter(Task.task_status == status_enum.value).all()
-        except ValueError:
-            # Invalid status given
-            tasks = []
-        tasks = db.query(Task).filter(Task.task_status == task_status.value).all()
     else:
-        tasks = db.query(Task).all()
-    return templates.TemplateResponse(request, "index.html", {"tasks": tasks})
+        filters = []
+        if task_status:
+            try:
+                status_enum = TaskStatus(task_status)
+                filters.append(Task.task_status == status_enum.value)
+            except ValueError:
+                pass
+        if title and title.strip():
+            filters.append(Task.title.ilike(f"%{title.strip()}%"))
+        if filters:
+            tasks = db.query(Task).filter(*filters).all()
+        else:
+            tasks = db.query(Task).all()
+    return templates.TemplateResponse(
+        request, "index.html", {"tasks": tasks, "no_results": len(tasks) == 0}
+    )
 
 
 @app.get("/tasks/{task_id}/edit", response_class=HTMLResponse)
@@ -145,7 +151,7 @@ def handle_404_error(request: Request, __):
     )
 
 
-# TODO OPTIONAL add ways to search by title, partial title
 # TODO OPTIONAL add way to sort by date
 # TODO Clean up unused code
 # TODO Look into pydantic model of Tasks. I think currently tasks are not using pydantic
+# TODO Write test for search by title
