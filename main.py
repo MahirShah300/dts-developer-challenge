@@ -1,12 +1,9 @@
-from fastapi import FastAPI, Query, Depends, Body, status, HTTPException, Request, Form
+from fastapi import FastAPI, Depends, Request, Form
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from database import init_db, SessionLocal, Task
 from sqlalchemy.orm import Session
-from sqlalchemy import update, and_
-from pydantic import BaseModel
 from datetime import date
-from typing import Annotated
 from models import TaskStatus
 from fastapi.staticfiles import StaticFiles
 
@@ -153,6 +150,3 @@ async def handle_404_error(request: Request, __):
     return templates.TemplateResponse(
         request, "404_redirect_page.html", status_code=404
     )
-
-
-# TODO Clean up unused code
