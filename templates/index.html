@@ -46,14 +46,19 @@
         <select name="task_status" id="task_status">
             <option value="">-- Select Status --</option>
             {% for option in ["Pending", "In Progress", "Completed", "Late", "Cancelled"] %}
-                <option value="{{ option }}">{{ option }}</option>
+                <option value="{{ option }}" {% if request.query_params.get('task_status') == option %}selected{% endif %}>{{ option }} </option>
             {% endfor %}
         </select>
 
         <label for="title">Title contains:</label>
-        <input type="text" id="title" name="title" placeholder="Enter keyword in title">
-
-        <button type="submit" class="button">Search by Status/Title</button>
+        <input type="text" id="title" name="title" placeholder="Enter keyword in title" value="{{request.query_params.get('title', '')}}">
+            <label for="sort">Sort by Due Date:</label>
+        <select name="sort" id="sort">
+            <option value="">-- No Sort --</option>
+            <option value="desc"{% if request.query_params.get('sort') == 'desc' %}selected{% endif %}>Descending</option>
+            <option value="asc"{% if request.query_params.get('sort') == 'asc' %}selected{% endif %}>Ascending</option>
+        </select>
+        <button type="submit" class="button">Search</button>
     </form>
     <div class="button-container">
         <a href="/createTask" class = "button-link">Add New Task</a>
@@ -92,7 +97,7 @@
     </table>
     {% endif %}
     <div class="button-container">
-    <a href="/tasks" class="button-link">Show All Tasks</a>
+    <a href="/tasks" class="button-link">Reset Filters</a>
     </div>
 </body>
 </html>
