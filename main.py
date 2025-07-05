@@ -64,6 +64,7 @@ def get_tasks(
     title: str | None = None,
     task_status: str | None = None,
     task_id: int | None = None,
+    sort: str | None = None,
     db: Session = Depends(get_db),
 ):
 
@@ -86,6 +87,10 @@ def get_tasks(
             tasks = db.query(Task).filter(*filters).all()
         else:
             tasks = db.query(Task).all()
+        if sort == "asc":
+            tasks = db.query(Task).filter(*filters).order_by(Task.due_date.asc()).all()
+        elif sort == "dsc":
+            tasks = db.query(Task).filter(*filters).order_by(Task.due_date.dsc()).all()
     return templates.TemplateResponse(
         request, "index.html", {"tasks": tasks, "no_results": len(tasks) == 0}
     )
@@ -150,7 +155,4 @@ async def handle_404_error(request: Request, __):
     )
 
 
-# TODO OPTIONAL add way to sort by date
 # TODO Clean up unused code
-# TODO Look into pydantic model of Tasks. I think currently tasks are not using pydantic
-# TODO Write test for search by title
