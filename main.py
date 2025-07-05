@@ -59,7 +59,7 @@ def create_tasks(
     return RedirectResponse(url="/tasks", status_code=303)
 
 
-@app.get("/tasks")
+@app.get("/tasks", response_class=HTMLResponse)
 def get_tasks(
     request: Request,
     task_status: TaskStatus | None = None,
@@ -85,15 +85,16 @@ def get_tasks(
         tasks = db.query(Task).all()
     return templates.TemplateResponse(request, "index.html", {"tasks": tasks})
 
+
 @app.get("/tasks/{task_id}/edit", response_class=HTMLResponse)
 def update_task_form(request: Request, task_id: int, db: Session = Depends(get_db)):
     task = db.query(Task).filter(Task.id == task_id).first()
     if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+        return templates.TemplateResponse(request, "task_not_found.html")
     return templates.TemplateResponse(request, "update_task.html", {"task": task})
 
 
-@app.post("/tasks/{task_id}/edit")
+@app.post("/tasks/{task_id}/edit", response_class=HTMLResponse)
 def update_task(
     request: Request,
     task_id: int,
@@ -105,7 +106,7 @@ def update_task(
 ):
     task = db.query(Task).filter(Task.id == task_id).first()
     if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+        return templates.TemplateResponse(request, "task_not_found.html")
     task.title = title
     task.description = description
     task.task_status = task_status
@@ -118,17 +119,17 @@ def update_task(
     )
 
 
-@app.get("/tasks/{task_id}/delete")
+@app.get("/tasks/{task_id}/delete", response_class=HTMLResponse)
 def check_confirm_deletion(
     request: Request, task_id: int, db: Session = Depends(get_db)
 ):
     task = db.query(Task).filter(Task.id == task_id).first()
     if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+        return templates.TemplateResponse(request, "task_not_found.html")
     return templates.TemplateResponse(request, "delete_task.html", {"task": task})
 
 
-@app.post("/tasks/{task_id}/delete")
+@app.post("/tasks/{task_id}/delete", response_class=HTMLResponse)
 def delete_task(request: Request, task_id: int, db: Session = Depends(get_db)):
     task = db.query(Task).filter(Task.id == task_id).delete()
     db.commit()
@@ -136,15 +137,15 @@ def delete_task(request: Request, task_id: int, db: Session = Depends(get_db)):
         request, "task_deleted_confirmation.html", {"task": task}
     )
 
+
 @app.exception_handler(404)
 def handle_404_error(request: Request, __):
-    return templates.TemplateResponse(request, "404_redirect_page.html", status_code=404)
+    return templates.TemplateResponse(
+        request, "404_redirect_page.html", status_code=404
+    )
+
 
 # TODO OPTIONAL add ways to search by title, partial title
 # TODO OPTIONAL add way to sort by date
-# TODO Make it so search by ID search bar only accepts numbers
 # TODO Clean up unused code
 # TODO Look into pydantic model of Tasks. I think currently tasks are not using pydantic
-# TODO Make all pages html pages have a consistent style
-# TODO Fix search by status
-# TODO Input validation
