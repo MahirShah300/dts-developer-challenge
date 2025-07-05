@@ -10,7 +10,6 @@ from typing import Annotated
 from models import TaskStatus
 from fastapi.staticfiles import StaticFiles
 
-# TODO look at best practice of async def vs def
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -30,12 +29,12 @@ def get_db():
 
 
 @app.get("/")
-def root():
+async def root():
     return RedirectResponse(url="/tasks")
 
 
 @app.get("/createTask", response_class=HTMLResponse)
-def add_task_form(request: Request):
+async def add_task_form(request: Request):
     return templates.TemplateResponse(request, "create_task.html")
 
 
@@ -145,7 +144,7 @@ def delete_task(request: Request, task_id: int, db: Session = Depends(get_db)):
 
 
 @app.exception_handler(404)
-def handle_404_error(request: Request, __):
+async def handle_404_error(request: Request, __):
     return templates.TemplateResponse(
         request, "404_redirect_page.html", status_code=404
     )
