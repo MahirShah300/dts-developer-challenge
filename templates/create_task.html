@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add New Task</title>
+    <style>
+        body { font-family: Arial; margin: 2rem; }
+        table { width: 80%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        .button-container { margin-top: 1rem; margin-bottom: 1rem; }
+        .button-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .button {
+            font-family: Arial; margin: 2rem;
+            font-size: 16px;
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button-link:hover, .button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Add New Task</h1>
+    <form method="post" action="/createTask">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br><br>
+
+        <label for="task_status">Status:</label>
+        <select id="task_status" name="task_status" required>
+            {% for option in ["Pending", "In Progress", "Completed", "Late", "Cancelled"] %}
+                <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+        </select><br><br>
+        <label for="description">Description</label>
+        <input type="text" id="description" name="description">
+        <label for="due_date">Due Date</label>
+        <input type="date" id="due_date" name="due_date" required>
+    <div class="button-container">
+        <a href="/tasks" class="button-link">Back to Task List</a>
+        <button type="submit" class="button" style="margin-left: 15rem;">Create Task</button>
+    </div>
+    </form>
+
+    <br>
+</body>
+</html>

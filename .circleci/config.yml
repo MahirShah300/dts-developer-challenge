@@ -1,0 +1,25 @@
+version: 2.1
+
+jobs:
+  run-pytests:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            export PIPENV_VENV_IN_PROJECT=1
+            pipenv install --dev --clear
+      - run:
+          name: Run pytests
+          command: |
+            export PIPENV_VENV_IN_PROJECT=1
+            pipenv run pytest --junitxml=junit.xml || ((($? == 5)) && echo 'Did not find any tests to run.')
+      - store_test_results:
+          path: junit.xml
+
+workflows:
+  test-workflow:
+    jobs:
+      - run-pytests
