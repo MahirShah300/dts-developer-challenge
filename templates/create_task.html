@@ -15,6 +15,21 @@
             text-decoration: none;
             border-radius: 4px;
         }
+        .button {
+            font-family: Arial; margin: 2rem;
+            font-size: 16px;
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button-link:hover, .button:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 </head>
 <body>
@@ -25,21 +40,20 @@
 
         <label for="task_status">Status:</label>
         <select id="task_status" name="task_status" required>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-            <option value="Late">Late</option>
-            <option value="Cancelled">Cancelled</option>
+            {% for option in ["Pending", "In Progress", "Completed", "Late", "Cancelled"] %}
+                <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
         </select><br><br>
         <label for="description">Description</label>
         <input type="text" id="description" name="description">
         <label for="due_date">Due Date</label>
         <input type="date" id="due_date" name="due_date" required>
-
-        <button type="submit">Create Task</button>
+    <div class="button-container">
+        <a href="/tasks" class="button-link">Back to Task List</a>
+        <button type="submit" class="button" style="margin-left: 15rem;">Create Task</button>
+    </div>
     </form>
 
     <br>
-    <a href="/tasks" class="button-link">Back to Task List</a>
 </body>
 </html>

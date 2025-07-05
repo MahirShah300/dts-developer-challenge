@@ -30,16 +30,12 @@
             border: none;
             font-size: 14px;
         }
-        .button-danger:hover {
-            background-color: #a71d2a;
-        }
-
     </style>
     <script>
         function cleanQueryForm(event) {
             const form = event.target;
             const taskId = form.task_id;
-            const taskStatus = form.taskstatus;
+            const taskStatus = form.task_status;
 
             // If task_id is empty, remove its name (so it's not sent)
             if (!taskId.value) {
@@ -54,21 +50,18 @@
     </script>
 </head>
 <body> 
-    <!-- TODO fix styling, add space between search and table -->
     <h1>All Tasks</h1>
 
     <form method="get" action="/tasks" onsubmit="cleanQueryForm(event)" style="margin-bottom: 1rem;">
         <label for="task_id">Search by ID:</label>
         <input type="number" id="task_id" name="task_id">
 
-        <label for="taskstatus"> or by Status:</label>
-        <select name="taskstatus" id="taskstatus">
+        <label for="task_status"> or by Status:</label>
+        <select name="task_status" id="task_status">
             <option value="">-- Select Status --</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-            <option value="Late">Late</option>
-            <option value="Cancelled">Cancelled</option>
+            {% for option in ["Pending", "In Progress", "Completed", "Late", "Cancelled"] %}
+                <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
         </select>
 
         <button type="submit" class="button">Search</button>
@@ -104,6 +97,8 @@
 
         </tbody>
     </table>
+    <div class="button-container">
     <a href="/tasks" class="button-link">Show All Tasks</a>
+    </div>
 </body>
 </html>
